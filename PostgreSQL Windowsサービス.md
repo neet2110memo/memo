@@ -63,7 +63,7 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
     ここではサービス名を`psql-x64-13`を例として登録します。OS起動時に自動でサービス立ち上げする場合は`start= auto`にします。手動なら`start= demand`、無効なら`start= disable`とします。
 
     ```cmd:サービスの登録
-    sc create "psql-x64-13" binPath= """"C:\Program Files\PostgreSQL\13\bin\pg_ctl.exe""" runservice -N """psql-x64-13""" -D """"D:\psql\13\data""" -w" depend= "RPCSS" DisplayName= "postgresql-x64-13 - PostgreSQL Server 13" error= normal obj= "NT AUTHORITY\NetworkService" type= own start= auto
+    sc create "psql-x64-13" binPath= """"C:\Program Files\PostgreSQL\13\bin\pg_ctl.exe""" runservice -N """psql-x64-13""" -D """"D:\psql\13\data""" -w" depend= "RPCSS" DisplayName= "psql-x64-13 - PostgreSQL Server 13" error= normal obj= "NT AUTHORITY\NetworkService" type= own start= auto
     ```
 
 - **サービスの説明文の追加**  
@@ -153,12 +153,6 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
 アーカイブフォルダを`C:\Users\postgres\psql\13\archivedir`、
 ログフォルダを`C:\Users\postgres\psql\13\log`
 とした時の設定例です。  
-`C:\Users\postgres\psql`フォルダの`アクセス許可`は以下のようにしてください。
-
-|ユーザー|アクセス許可|
-|:-:|:-:|
-|postgres|フルコントロール|
-|NETWORK SERVICE|読み取り|
 
 ```Properties:postgresql.confの変更箇所
 archive_mode = on
@@ -173,6 +167,13 @@ logging_collector = on
 log_directory = 'C:\\Users\\postgres\\psql\\13\\log'
 log_replication_commands = on
 ```
+
+`C:\Users\postgres\psql`フォルダの`アクセス許可`は以下のようにしてください。
+
+|ユーザー|アクセス許可|
+|:-:|:-:|
+|postgres|フルコントロール|
+|NETWORK SERVICE|読み取り|
 
 ## **pg_hba.confの設定**  
 
@@ -197,6 +198,8 @@ Linux版での`~/.pgpass`ファイルはWindows版だと
 書式は`hostname:port:database:username:password`のように書きます。
 
 ```txt:pgpass.conf
+localhost:5432:postgres:postgres:postgrespassword
+localhost:5432:replication:repl:replpassword
 psqlsrv1:5432:postgres:postgres:postgrespassword
 psqlsrv1:5432:replication:repl:replpassword
 psqlsrv2:5432:postgres:postgres:postgrespassword
