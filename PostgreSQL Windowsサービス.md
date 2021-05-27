@@ -85,10 +85,10 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
     ```
 
     > :bulb: **ヒント**  
-    サービス開始に失敗するときは、データフォルダのアクセス権限に`NetworkService`がフルコントロールとなっているか確認してください。
+    サービス開始に失敗するときは、データフォルダの`アクセス許可`に`NetworkService`がフルコントロールとなっているか確認してください。
 
 - **サービスの実行権限を変更する**  
-    これが標準ユーザーでサービス登録するときの肝です。まず、作成したサービスの`アクセス許可`を下記コマンドで取得します。
+    これが標準ユーザーでサービス登録するときの肝です。まず、作成したサービスの`随意アクセス制御リスト`を下記コマンドで取得します。
 
     ```cmd:アクセス許可を取得
     sc sdshow "psql-x64-13"
@@ -100,7 +100,7 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
     D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)
     ```
 
-    これにサービスを実行するユーザーのセキュリティ識別子(SID)を追加します。`NETWORK SERVICE`のSIDは`S-1-5-20`と決まっていますので先ほどの実行結果に`(A;;RPWP;;;S-1-5-20)`を追加します。下記のコマンドで追加した`アクセス許可`を上書きします。
+    これにサービスを実行するユーザーのセキュリティ識別子(SID)を追加します。`NETWORK SERVICE`のSIDは`S-1-5-20`と決まっていますので先ほどの実行結果に`(A;;RPWP;;;S-1-5-20)`を追加します。下記のコマンドで追加した`随意アクセス制御リスト`を上書きします。
 
     ```cmd:SID上書き
     sc sdset "psql-x64-13"  D:(A;;RPWP;;;S-1-5-20)(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)
@@ -113,7 +113,8 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
     ```
 
     > :bulb: `NETWORK SERVICE`などの既知のSIDではない場合は`whoami /<user>`コマンドでSIDを調べます。  
-    "RPWP"は"RP(Start)とWP(Stop)の操作を許可"という意味のようです。
+    `随意アクセス制御リスト`の書式は`<可否指定>;;<アクセス許可を変更したい操作名の列>;;;<SID>`です。
+    `(A;;RPWP;;;S-1-5-20)`の"A"は許可、"RPWP"は"RP(Start)とWP(Stop)の操作を許可"という意味のようです。
 
 ## **レプリケーションをスクリプトから行うための設定**  
 
@@ -206,7 +207,7 @@ psqlsrv2:5432:postgres:postgres:postgrespassword
 psqlsrv2:5432:replication:repl:replpassword
 ```
 
-`pgpass.conf`の権限は下記のようにします。
+`pgpass.conf`の`アクセス許可`は下記のようにします。
 
 |ユーザー|アクセス許可|
 |:-:|:-:|
