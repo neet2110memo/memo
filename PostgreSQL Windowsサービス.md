@@ -30,14 +30,14 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
     initdbで初期データベースを作成します。
     コマンドプロンプトで下記を実行します。PostgreSQLのユーザー名は`postgres`とします。
 
-    ```cmd:コマンドプロンプト
+    ```bat: コマンドプロンプト
     "C:\Program Files\PostgreSQL\13\bin\initdb.exe" -D "D:\psql\13\data" --username=postgres --encoding=UTF-8 --locale=C --auth=scram-sha-256 --pwprompt
     ```
 
     （日本語ロケールは遅くなるだけという情報があるので--locale=Cとして無効にしています。）  
     実行結果は下記のようになります。これは手動でコマンドプロンプトでPostgreSQLを起動する場合のコマンドとなります。サービス登録しない場合にはこれで起動させます。
 
-    ```cmd:結果
+    ```bat: 結果
     ^"C^:^/Program^ Files^/PostgreSQL^/13^/bin^/pg^_ctl^" -D ^"D^:^\psql^\13^\data^" -l ログファイル start
     ```
 
@@ -55,32 +55,32 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
 - **サービスの削除**  
     デフォルトでインストールした時のサービス`postgresql-x64-13`を削除します。
 
-    ```cmd:サービスの削除
+    ```bat: サービスの削除
     sc delete "postgresql-x64-13"
     ```
 
 - **サービスの新規作成**  
     ここではサービス名を`psql-x64-13`を例として登録します。OS起動時に自動でサービス立ち上げする場合は`start= auto`にします。手動なら`start= demand`、無効なら`start= disable`とします。
 
-    ```cmd:サービスの登録
+    ```bat: サービスの登録
     sc create "psql-x64-13" binPath= """"C:\Program Files\PostgreSQL\13\bin\pg_ctl.exe""" runservice -N """psql-x64-13""" -D """"D:\psql\13\data""" -w" depend= "RPCSS" DisplayName= "psql-x64-13 - PostgreSQL Server 13" error= normal obj= "NT AUTHORITY\NetworkService" type= own start= auto
     ```
 
 - **サービスの説明文の追加**  
     新規作成時に説明文を追加できないので必要であれば後から追加する。
 
-    ```cmd:サービスの説明文追加
+    ```bat: サービスの説明文追加
     sc description "psql-x64-13" "Provides relational database storage."
     ```
 
 - **サービスの開始、終了**  
     scで起動すると非同期、netで起動すると同期となります。スクリプトなどで起動するときは失敗を検知するためにnetの方が便利です。
 
-    ```cmd:サービス開始1
+    ```bat: サービス開始1
     sc start "psql-x64-13"
     ```
 
-    ```cmd:サービス開始2
+    ```bat: サービス開始2
     net start "psql-x64-13"
     ```
 
@@ -90,25 +90,25 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
 - **サービスの実行権限を変更する**  
     これが標準ユーザーでサービス登録するときの肝です。まず、作成したサービスの`随意アクセス制御リスト`を下記コマンドで取得します。
 
-    ```cmd:アクセス許可を取得
+    ```bat: アクセス許可を取得
     sc sdshow "psql-x64-13"
     ```
 
     実行結果
 
-    ```cmd:結果
+    ```bat: 結果
     D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)
     ```
 
     これにサービスを実行するユーザーのセキュリティ識別子(SID)を追加します。`NETWORK SERVICE`のSIDは`S-1-5-20`と決まっていますので先ほどの実行結果に`(A;;RPWP;;;S-1-5-20)`を追加します。下記のコマンドで追加した`随意アクセス制御リスト`を上書きします。
 
-    ```cmd:SID上書き
+    ```bat: SID上書き
     sc sdset "psql-x64-13"  D:(A;;RPWP;;;S-1-5-20)(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)
     ```
 
     実行結果
 
-    ```cmd:結果
+    ```bat: 結果
     [SC] SetServiceObjectSecurity SUCCESS
     ```
 
@@ -124,7 +124,7 @@ Linuxのように管理者以外でPostgreSQLサービスを立ち上げよう�
     レプリケーションを実行するユーザー名を`repl`とした時のレプリケーションに必要な権限などを設定します。  
     まず、psqlコンソールにログインします。
 
-    ```cmd:psql設定
+    ```bat: psql設定
     "C:\Program Files\PostgreSQL\13\bin\psql.exe" -U postgres -h localhost -p 5432 -d postgres
     ```
 
@@ -213,5 +213,3 @@ psqlsrv2:5432:replication:repl:replpassword
 |:-:|:-:|
 |postgres|フルコントロール|
 |NETWORK SERVICE|読み取り|
-
-<br>
