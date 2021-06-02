@@ -1,8 +1,9 @@
 # Hyper-Vをネットワーク内PCのように扱うブリッジ接続の設定
 
-> 環境: Windows10 21H1 WSL有  
+> 環境: Windows10 21H1 WSL有
 
 > :warning: 定期的にネットワークが切れてしまう不具合があるようです。ハードの構成によって相性がある可能性があります。
+>> この不具合は`Intel Ethernet Connection I217-V`で発生しましたが、ドライバを最新にしてから設定の`Receive-Side Scaling`を無効<sup>[3](https://answers.microsoft.com/ja-jp/windows/forum/windows_10-networking-winpc/windows-10/aa9f0579-fd4f-4112-ad7a-a06fe5598c65)</sup>しにて、さらにコマンドプロンプト管理者権限で`Receive-Side Scaling（RSS）の無効化`のコマンド`netsh int tcp set global rss=disabled`を設定<sup>[4](https://xtech.nikkei.com/it/article/COLUMN/20100824/351391/)</sup>すると改善しました。
 
 ## 概要
 
@@ -79,6 +80,8 @@ Hyper-Vネットワーク接続する場合デフォルトだと`Default Switch`
 
 ## 参考URL
 
-1. https://www.atmarkit.co.jp/ait/articles/2008/14/news018.html
-2. https://qiita.com/nkojima/items/4056d749328d4512c53f  
+1. [仮想スイッチの種別と用途 Windows 10 Hyper-V入門](<https://www.atmarkit.co.jp/ait/articles/2008/14/news018.html>)
+2. [WindowsPCとLinuxサーバーをブリッジ接続する方法](<https://qiita.com/nkojima/items/4056d749328d4512c53f>)
   の`4. ForceCompatibilityModeの設定`
+3. [Windows 10 でイーサネット接続エラーが表示されてインターネットに接続できなくなる。](https://answers.microsoft.com/ja-jp/windows/forum/windows_10-networking-winpc/windows-10/aa9f0579-fd4f-4112-ad7a-a06fe5598c65)
+4. [［Windows 7編］ネットワーク設定を標準で使ってはいけない](<https://xtech.nikkei.com/it/article/COLUMN/20100824/351391/>)
