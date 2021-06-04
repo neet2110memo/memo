@@ -2,7 +2,7 @@
 
 ## Amazon Linux 2にAWS CLIをインストール
 
-Dockerの`AmazonLinux2`に`AWS CLI ver.2`をインストールします。
+Dockerの`AmazonLinux2`に`AWS CLI ver.2`<sup>[2](#ref2)</sup>をインストールします。
 
 パッケージ`less`をインストールします。
 
@@ -220,9 +220,11 @@ IAMで作成したユーザーのアクセスキーIDとシークレットキー
     今回は分をランダムにしたいので`$(( $(od -vAn -N4 -tu4 < /dev/random) % 60 ))`として0-59になるようにしています。
 
     ```bash: bash
-    minutes=$(( $(od -vAn -N4 -tu4 < /dev/random) % 60 ))
-    aws events put-rule --name {event name} --schedule-expression "cron($minutes 10 * * ? *)" --state ENABLED
+    minute=$(( $(od -vAn -N4 -tu4 < /dev/random) % 60 ))
+    aws events put-rule --name {event name} --schedule-expression "cron($minute 10 * * ? *)" --state ENABLED
     ```
+
+    > **:bulb:ヒント** ルールを変更するにはもう一度同じルール名で`aws events put-rule`すれば上書きされます。この時ターゲットはそのままになります。  
 
     ルールに追加するターゲットのjsonファイルを作成します。ここではイベント発生時に`ECS タスク`としてFargateのタスクを実行する例を示します。jsonファイルは現在の作業ディレクトリに配置します。  
     scheduledtask.json
