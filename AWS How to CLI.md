@@ -84,7 +84,7 @@ Supply values for the following parameters:
 SecretKey:
 ```
 
-ログインします。
+ECRのレポジトリにログインする例
 
 ```ps1: ログイン
 (Get-ECRLoginCommand).Password | docker login --username AWS --password-stdin xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/repo-name
@@ -116,8 +116,8 @@ RegisteredAccounts.json
 ```json: RegisteredAccounts.json
 {
     "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" : {
-        "AWSAccessKey" : "31B465964896E87EF0894C85B792CE9AA2C5F7D73AA660D9F80559218632CC60000000000E8000000002000020000000DAFE50D95B2D4BEAB7DBFD80DA69C7DA44D475E61D37C30DC779CDA007F9E575300000006E777CE74CACD1FEF8C40CFE6911126EBDBA9DD269FAF7F1FC32E414F70E9BA77AF6A1CFBD90386FF026CD2FF3A81C8340000000958AE42820729C6335155A76381D7D91C4F0AFE1B4B5E8BB1E6D4A5C36C8C41669BF9DEA6FFEBB57CBC01A902A3994AA5D5E433E8F787278B8843A710C759080",
-        "AWSSecretKey" : "4B68F8BD736CB0F3D2BF89684125114B72F0EED745937970C43108FAFB7D95DE000000000E8000000002000020000000912F1A46A1288EF2B16AEBFEF7D27E8E8D36E47511EBCCB1EB7B18E8E3F8B4CE10000000690CFECACCD99D4A18257C497CB9092340000000A9B886192ADBF3634C49F43489F44E351F467C052510CE0683FBFFAE06E594A3D20F68D0F404F8A9559952D21B25745F1B294E67501E8C699B51B11FFF90FFEB",
+        "AWSAccessKey" : "3AA660D9F80559218632CC60DAFE50D95B2D4BEAB7DBFD80DA69C7DA44D475E61D37C30DC779CDA007F9E575300000006E777CE74CACD1FEF8C40CFE6911126EBDBA9DD269FAF7F1FC32E414F70E9BA77AF6A1CFBD90386FF026CD2FF3A81C8340000000958AE42820729C6335155A76381D7D91C4F0AFE1B4B5E8BB1E6D4A5C",
+        "AWSSecretKey" : "ED745937970C43108FAFB7D95DE912F1A46A1288EF2B16AEBFEF7D27E8E8D36E47511EBCCB1EB7B18E8E3F8B4CE10000000690CFECACCD99D4A18257C497CB9092340000000A9B886192ADBF3634C49F43489F44E351F467C052510CE0683FBFFAE06E594A3D20F68D0F404F8A9559952D21B25745F1B294E67501E8C699B51B",
         "ProfileType"  : "AWS",
         "DisplayName"  : "{name}"
     }
@@ -156,6 +156,11 @@ IAMで作成したユーザーのアクセスキーIDとシークレットキー
     本ページの`WindowsのPowoerShellにAWSPowerShellをインストール`の項目を参照してください。
 
 7. **レポジトリにプッシュ**
+    作成したレポジトリのURIにレポジトリにログインします。
+
+    ```ps1: ログイン
+    (Get-ECRLoginCommand).Password | docker login --username AWS --password-stdin xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/repo-name
+    ```
 
     作成したレポジトリのURIに`Docker push`します。
 
@@ -204,20 +209,23 @@ IAMで作成したユーザーのアクセスキーIDとシークレットキー
 
 3. **イベントの操作**
     ルールを作成します。
-    cron式は`分 時 日 月 曜日`<sup>[3](#ref3)</sup>となります。次の例の10回のトリガーは以下となります。  
+    cron式は`分 時 日 月 曜日 年`<sup>[3](#ref3)</sup>となります。次の例の10回のトリガーは以下となります。  
     Cron 式 `0 10 * * ? *`
-    - Fri, 04 Jun 2021 10:00:00 GMT
-    - Sat, 05 Jun 2021 10:00:00 GMT
-    - Sun, 06 Jun 2021 10:00:00 GMT
-    - Mon, 07 Jun 2021 10:00:00 GMT
-    - Tue, 08 Jun 2021 10:00:00 GMT
-    - Wed, 09 Jun 2021 10:00:00 GMT
-    - Thu, 10 Jun 2021 10:00:00 GMT
-    - Fri, 11 Jun 2021 10:00:00 GMT
-    - Sat, 12 Jun 2021 10:00:00 GMT
-    - Sun, 13 Jun 2021 10:00:00 GMT
 
-    今回は分をランダムにしたいので`$(( $(od -vAn -N4 -tu4 < /dev/random) % 60 ))`として0-59になるようにしています。
+    ```txt:cron
+    Fri, 04 Jun 2021 10:00:00 GMT
+    Sat, 05 Jun 2021 10:00:00 GMT
+    Sun, 06 Jun 2021 10:00:00 GMT
+    Mon, 07 Jun 2021 10:00:00 GMT
+    Tue, 08 Jun 2021 10:00:00 GMT
+    Wed, 09 Jun 2021 10:00:00 GMT
+    Thu, 10 Jun 2021 10:00:00 GMT
+    Fri, 11 Jun 2021 10:00:00 GMT
+    Sat, 12 Jun 2021 10:00:00 GMT
+    Sun, 13 Jun 2021 10:00:00 GMT
+    ```
+
+    今回は分をランダムにしたいので`$(( $(od -vAn -N4 -tu4 < /dev/random) % 60 ))`として0-59になるようにしています。bashで一般的な`$((​$RANDOM % 60))`はAmazonLinux2ではできませんでした。
 
     ```bash: bash
     minute=$(( $(od -vAn -N4 -tu4 < /dev/random) % 60 ))
