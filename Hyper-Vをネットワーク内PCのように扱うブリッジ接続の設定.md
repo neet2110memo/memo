@@ -1,9 +1,12 @@
 # Hyper-Vをネットワーク内PCのように扱うブリッジ接続の設定
 
-> 環境: Windows10 21H1 WSL有
+> 環境: Windows10 21H1 WSL有  
+
+## <br>
 
 > :warning: 定期的にネットワークが切れてしまう不具合があるようです。ハードの構成によって相性がある可能性があります。
 >> この不具合は`Intel Ethernet Connection I217-V`で発生しましたが、ドライバを最新にしてから設定の`Receive-Side Scaling`を無効<sup>[3](https://answers.microsoft.com/ja-jp/windows/forum/windows_10-networking-winpc/windows-10/aa9f0579-fd4f-4112-ad7a-a06fe5598c65)</sup>しにて、さらにコマンドプロンプト管理者権限で`Receive-Side Scaling（RSS）の無効化`のコマンド`netsh int tcp set global rss=disabled`を設定<sup>[4](https://xtech.nikkei.com/it/article/COLUMN/20100824/351391/)</sup>すると改善しました。
+>>> LANケーブルのリンク速度が不安定で100Mbpsと1Gbpsが不定期に切り替わっていました。これが不具合の原因だったようです。ケーブルを交換したら治りました。
 
 ## 概要
 
